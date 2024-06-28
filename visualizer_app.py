@@ -256,4 +256,4 @@ def update_elements(needed_columns, chosen_attributes, file_content, filename, s
 
 
 
-app.run_server(debug=True) # Запуск
+app.run_server(debug=True, host='0.0.0.0') # Запуск
