@@ -12,11 +12,18 @@ cyto.load_extra_layouts()
 def convert_to_df(contents, filename, sheetname):
     if contents is not None:
         content_type, content_string = contents.split(',')
-        #sheetname = sheetname.strip()
+        
 
         decoded = base64.b64decode(content_string)
-        df = pd.read_excel(io.BytesIO(decoded), sheet_name=sheetname)
-        return df
+        if 'csv' in filename:
+            # Assume that the user uploaded a CSV file
+            df = pd.read_csv(
+                io.StringIO(decoded.decode('utf-8')))
+            return df
+        elif 'xls' in filename:
+            # Assume that the user uploaded an excel file
+            df = pd.read_excel(io.BytesIO(decoded), sheet_name=sheetname)
+            return df
             
 
 
