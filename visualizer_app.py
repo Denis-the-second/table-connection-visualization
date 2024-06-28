@@ -23,8 +23,12 @@ def convert_to_df(contents, filename, sheetname):
                 return df
             elif 'xls' in filename:
                 # Assume that the user uploaded an excel file
-                df = pd.read_excel(io.BytesIO(decoded))
-                return df
+                if sheetname != '':
+                    df = pd.ExcelFile(io.BytesIO(decoded), engine='openpyxl').parse(sheet_name = sheetname)
+                    return df
+                else:
+                    df = pd.ExcelFile(io.BytesIO(decoded), engine='openpyxl').parse()
+                    return df
         except Exception as e:
             print(e)
             
