@@ -40,19 +40,20 @@ def elements_maker(df, df_dict, needed_columns):
             # Проверка на то, что в рамках все значения в рамках одной строки - значения, выбранные пользователем (чтобы не было лишних узлов)
             if all([tmp_df.iloc[row, i] in df_dict[list(df_dict.keys())[i]] for i in range(len(tmp_df.iloc[row]))]) == True:
                 for i in range(1, len(tmp_df.iloc[row])): # Итерация в рамках всех значений одной строки
-                    if tmp_df.iloc[row, i - 1] not in duplicates_container:
+                    previous_value, current_value = str(tmp_df.iloc[row, i - 1]), str(tmp_df.iloc[row, i])
+                    if previous_value not in duplicates_container:
                         # Создание узла, если он еще не был создан
-                        elements.append({'data': {'id': tmp_df.iloc[row, i - 1], 'label': tmp_df.iloc[row, i - 1], 'firstname': list(df_dict.keys())[i - 1]}})
-                        duplicates_container.append(tmp_df.iloc[row, i - 1])
-                    if tmp_df.iloc[row, i] not in duplicates_container:
+                        elements.append({'data': {'id': previous_value, 'label': previous_value, 'firstname': list(df_dict.keys())[i - 1]}})
+                        duplicates_container.append(previous_value)
+                    if current_value not in duplicates_container:
                         # Создание узла, если он еще не был создан (повторение из-за того, что начало итерации начинается не с 0-го элемента, а с 1-го)
-                        elements.append({'data': {'id': tmp_df.iloc[row, i], 'label': tmp_df.iloc[row, i], 'firstname': list(df_dict.keys())[i]}})
-                        duplicates_container.append(tmp_df.iloc[row, i - 1])
-                    if tmp_df.iloc[row, i - 1] in df_dict[list(df_dict.keys())[i - 1]] and tmp_df.iloc[row, i] in df_dict[list(df_dict.keys())[i]]:
+                        elements.append({'data': {'id': current_value, 'label': current_value, 'firstname': list(df_dict.keys())[i]}})
+                        duplicates_container.append(previous_value)
+                    if previous_value in df_dict[list(df_dict.keys())[i - 1]] and current_value in df_dict[list(df_dict.keys())[i]]:
                         # Создание связи между узлами, если такой связи еще не существует
-                        if (tmp_df.iloc[row, i - 1], tmp_df.iloc[row, i]) not in duplicates_container: # Проверка на то, что связь не была уже добавлена в elements
-                            elements.append({'data': {'source': tmp_df.iloc[row, i - 1], 'target': tmp_df.iloc[row, i]}}) # Добавляем связь
-                            duplicates_container.append((tmp_df.iloc[row, i - 1], tmp_df.iloc[row, i])) # Заносим ее в список duplicates_container, чтобы случайно не добавить ее еще раз
+                        if previous_value + current_value not in duplicates_container: # Проверка на то, что связь не была уже добавлена в elements
+                            elements.append({'data': {'source': previous_value, 'target': current_value}}) # Добавляем связь
+                            duplicates_container.append(previous_value + current_value) # Заносим ее в список duplicates_container, чтобы случайно не добавить ее еще раз
         return elements
     else:
         return []
