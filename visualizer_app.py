@@ -38,7 +38,7 @@ def elements_maker(df, df_dict, needed_columns):
         
         for row in range(tmp_df.shape[0]): # Итерация по строкам
             # Проверка на то, что в рамках все значения в рамках одной строки - значения, выбранные пользователем (чтобы не было лишних узлов)
-            if all([tmp_df.iloc[row, i] in df_dict[list(df_dict.keys())[i]] for i in range(len(tmp_df.iloc[row]))]) == True:
+            if all([str(tmp_df.iloc[row, i]) in df_dict[list(df_dict.keys())[i]] for i in range(len(tmp_df.iloc[row]))]) == True:
                 for i in range(1, len(tmp_df.iloc[row])): # Итерация в рамках всех значений одной строки
                     previous_value, current_value = str(tmp_df.iloc[row, i - 1]), str(tmp_df.iloc[row, i])
                     if previous_value not in duplicates_container:
@@ -49,7 +49,7 @@ def elements_maker(df, df_dict, needed_columns):
                         # Создание узла, если он еще не был создан (повторение из-за того, что начало итерации начинается не с 0-го элемента, а с 1-го)
                         elements.append({'data': {'id': current_value, 'label': current_value, 'firstname': list(df_dict.keys())[i]}})
                         duplicates_container.append(previous_value)
-                    if previous_value in df_dict[list(df_dict.keys())[i - 1]] and current_value in df_dict[list(df_dict.keys())[i]]:
+                    if previous_value in df_dict[str(list(df_dict.keys())[i - 1])] and current_value in df_dict[str(list(df_dict.keys())[i])]:
                         # Создание связи между узлами, если такой связи еще не существует
                         if previous_value + current_value not in duplicates_container: # Проверка на то, что связь не была уже добавлена в elements
                             elements.append({'data': {'source': previous_value, 'target': current_value}}) # Добавляем связь
@@ -177,8 +177,8 @@ def atribute_specifier(needed_columns, file_content, filename, sheet_name):
             ),
                 dcc.Checklist(
                     id={'type': 'attribute-checklist', 'index': column },
-                    options=list(df[column].unique()),
-                    value=list(df[column].unique()),
+                    options=[str(elem) for elem in df[column].unique()],
+                    value=[str(elem) for elem in df[column].unique()],
                     inline=True
                     )  
                 ])
@@ -237,7 +237,7 @@ def update_elements(needed_columns, chosen_attributes, file_content, filename, s
         try:
             df_dict[column] = chosen_attributes[needed_columns.index(column)]
         except IndexError:
-            df_dict[column] = list(df[column].unique())
+            df_dict[column] = [str(elem) for elem in df[column].unique()]
 
     
     try:
