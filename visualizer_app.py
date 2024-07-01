@@ -21,6 +21,8 @@ def convert_to_df(contents, filename, sheetname):
                 io.StringIO(decoded.decode('utf-8')))
             return df
         elif 'xls' in filename:
+            if sheetname == '':
+                sheetname = 0
             # Assume that the user uploaded an excel file
             df = pd.read_excel(io.BytesIO(decoded), sheet_name=sheetname)
             return df
@@ -83,7 +85,7 @@ app.layout = html.Div(children = [ # Пояснение параметров: ц
     html.Div(dcc.Input(
             id="excel sheet",
             placeholder='',
-            value=0,
+            value='',
             style={
             'width': '90%',
             'height': '30px',
